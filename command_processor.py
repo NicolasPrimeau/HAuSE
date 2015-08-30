@@ -1,7 +1,7 @@
 
 import pafy, sys
 import speech_recognition as sr
-from command import Command
+from common.command import Command
 
 class CommandProcessor:
 

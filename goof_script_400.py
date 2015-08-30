@@ -3,9 +3,9 @@
 import pafy, sys
 from subprocess import Popen, PIPE
 from command_processor import CommandProcessor
-from command_types import CommandTypes
-from command import Command
-from system_processor import SystemProcessor, SystemCommands
+from common.command_types import CommandTypes
+from common.command import Command
+from SubtypeProcessors.system_processor import SystemProcessor, SystemCommands
 
 location = "/tmp/audio-temp"
 
@@ -19,7 +19,7 @@ def main():
   processor = CommandProcessor()
   while True:
     command = processor.get_command()
-    #command = Command("time", CommandTypes.SYSTEM, SystemCommands.TIME)
+    #command = Command("time", command_type=CommandTypes.SYSTEM, sub_type=SystemCommands.TIME)
     print(command)
     if command.command_type == CommandTypes.MUSIC:
       # Music procssor here
