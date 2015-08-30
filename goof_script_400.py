@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
 import pafy, sys
-import speech_recognition as sr
 from subprocess import Popen, PIPE
+from command_processor import CommandProcessor
+from command_types import CommandTypes
+from command import Command
+from system_processor import SystemProcessor, SystemCommands
 
 location = "/tmp/audio-temp"
 
@@ -13,12 +16,20 @@ command_map = {
 }
 
 def main():
+  processor = CommandProcessor()
   while True:
-    command = get_command()
+    command = processor.get_command()
+    #command = Command("time", CommandTypes.SYSTEM, SystemCommands.TIME)
     print(command)
-    if command is not None and command in command_map:
+    if command.command_type == CommandTypes.MUSIC:
+      # Music procssor here
       song = get_song(command)
       play_song(get_song(command))
+    elif command.command_type == CommandTypes.SYSTEM:
+      #System processor here
+      systemProcessor = SystemProcessor()
+      systemProcessor.process(command)
+    break
 
 def play_song(obj):
   stream = obj.getbestaudio(preftype="m4a")
@@ -44,20 +55,8 @@ def play_ogg():
   pygame.mixer.music.load(location+".ogg")
   pygame.mixer.music.play()
 
-def get_command():
-  r = sr.Recognizer()
-  m = sr.Microphone()
-
-  with m as source:
-    r.adjust_for_ambient_noise(source)
-    audio = r.listen(source)
-    try:
-      return r.recognize(audio)
-    except LookupError:
-      return None
-
-def get_song(title):
-  return pafy.new(command_map[title])
+def get_song(command):
+  return pafy.new(command.value)
 
 
 if __name__ == "__main__":

@@ -5,19 +5,19 @@
 class Command:
 
   command = None
-  command_typ = None
+  command_type = None
   value = None
   is_new = None
 
   def __init__(self, command, typ=None, value=None):
     self.command = command
-    self.typ = typ
+    self.command_type = typ
     self.value = value
-    _fetch_values()
+    self._fetchCommand()
 
   # Implement this later, most likely as inherited
   # This would fetch from mongo db
-  def _fetchValue(self):
+  def _fetchCommand(self):
     return None
 
   

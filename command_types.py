@@ -2,6 +2,6 @@
 from enum import Enum
 
 class CommandTypes(Enum):
-  MUSIC,
-  SYSTEM
+  MUSIC = 1
+  SYSTEM = 2
 
