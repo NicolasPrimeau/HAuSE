@@ -1,34 +1,27 @@
 #!/usr/bin/env python3
 
-import pafy, sys
+import pafy, sys, configurations
 from subprocess import Popen, PIPE
-from listener import Listener
+from speech.listener import Listener
 from common.command_types import CommandTypes
 from common.command import Command
 from SubtypeProcessors.system_processor import SystemProcessor, SystemCommands
 from SubtypeProcessors.audio_processor import AudioProcessor
 
-def parseArgs():
-  args = dict()
-  args["quiet"] = False
-  for arg in sys.argv:
-    if arg == "--quietMode":
-      args["quiet"] = True
-
-  return args
-
 
 def main():
-  args = parseArgs()
+  configurations.parseArgs(sys.argv)
   listener = Listener()
   while True:
-    if not args["quiet"]:
+    print("What's up?")
+    if not configurations.ARGS["quiet"]:
       command = Command(listener.listen())
     else:
-      command = Command(input("What's up? "))
-    
-    if command is not None:
-      if command.command_type == CommandTypes.MUSIC:
+      command = Command(input())
+
+    if command is not None and command.name is not None:
+      print("Command " + command.name)
+      if command.command_type == CommandTypes.PLAY:
         # Music procssor here
         audioProcessor = AudioProcessor()
         audioProcessor.process(command)
@@ -41,5 +34,7 @@ def main():
         sys.exit(0)
       else:
         print("Command not recognized.")
+    else:
+      print("I'm sorry, I didn't catch that")
 if __name__ == "__main__":
   main()

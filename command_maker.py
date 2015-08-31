@@ -11,7 +11,6 @@ song = dict()
 song['name'] = sys.argv[1]
 song['command_type'] = int(sys.argv[2])
 song['sub_type'] = int(sys.argv[3])
-song['value'] = sys.argv[4]
 cursor.insert(song)
 client.close()
 
