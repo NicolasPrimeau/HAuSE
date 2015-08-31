@@ -2,24 +2,31 @@
 
 import pafy, sys
 from subprocess import Popen, PIPE
-from command_processor import CommandProcessor
+from listener import Listener
 from common.command_types import CommandTypes
 from common.command import Command
 from SubtypeProcessors.system_processor import SystemProcessor, SystemCommands
 from SubtypeProcessors.audio_processor import AudioProcessor
 
-location = "/tmp/audio-temp"
+def parseArgs():
+  args = dict()
+  args["quiet"] = False
+  for arg in sys.argv:
+    if arg == "--quietMode":
+      args["quiet"] = True
 
-command_map = {
- "play my jam" : "https://www.youtube.com/watch?v=8PLifPUIuic",
- "where is my money" : "https://www.youtube.com/watch?v=4jBDnYE1WjI",
- "what does the fox say" : "https://www.youtube.com/watch?v=jofNR_WkoCE",
-}
+  return args
+
 
 def main():
-  processor = CommandProcessor()
+  args = parseArgs()
+  listener = Listener()
   while True:
-    command = processor.get_command()
+    if not args["quiet"]:
+      command = Command(listener.listen())
+    else:
+      command = Command(input("What's up? "))
+    
     if command is not None:
       if command.command_type == CommandTypes.MUSIC:
         # Music procssor here
@@ -27,8 +34,12 @@ def main():
         audioProcessor.process(command)
       elif command.command_type == CommandTypes.SYSTEM:
         #System processor here
-        systemProcessor = SystemProcessor()
+        systemProcessor = SystemProcessor(args["quiet"])
         systemProcessor.process(command)
-
+      elif command.name.lower() == "exit":
+        print("Exiting")
+        sys.exit(0)
+      else:
+        print("Command not recognized.")
 if __name__ == "__main__":
   main()
