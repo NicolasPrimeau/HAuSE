@@ -3,7 +3,7 @@
 from enum import Enum
 import time
 
-class SystemCommands(Enum):
+class SystemCommands:
   TIME = 1
 
 

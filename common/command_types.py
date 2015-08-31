@@ -1,7 +1,5 @@
 
-from enum import Enum
-
-class CommandTypes(Enum):
+class CommandTypes:
   MUSIC = 1
   SYSTEM = 2
 

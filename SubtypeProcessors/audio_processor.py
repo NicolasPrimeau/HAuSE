@@ -1,10 +1,10 @@
 
 from actuators.audio_player import AudioPlayer
 
-class AudioCommands(Enum):
+class AudioCommands:
   PLAY = 1
 
-def AudioProcessor:
+class AudioProcessor:
   
   def __init__(self):
     pass
@@ -13,7 +13,7 @@ def AudioProcessor:
     if command is None:
       return
     
-    if command.sub_type = AudioCommands.PLAY:
+    if command.sub_type == AudioCommands.PLAY:
       player = AudioPlayer(command)
       player.play()
 

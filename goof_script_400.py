@@ -6,6 +6,7 @@ from command_processor import CommandProcessor
 from common.command_types import CommandTypes
 from common.command import Command
 from SubtypeProcessors.system_processor import SystemProcessor, SystemCommands
+from SubtypeProcessors.audio_processor import AudioProcessor
 
 location = "/tmp/audio-temp"
 
@@ -19,45 +20,15 @@ def main():
   processor = CommandProcessor()
   while True:
     command = processor.get_command()
-    #command = Command("time", command_type=CommandTypes.SYSTEM, sub_type=SystemCommands.TIME)
-    print(command)
-    if command.command_type == CommandTypes.MUSIC:
-      # Music procssor here
-      song = get_song(command)
-      play_song(get_song(command))
-    elif command.command_type == CommandTypes.SYSTEM:
-      #System processor here
-      systemProcessor = SystemProcessor()
-      systemProcessor.process(command)
-    break
-
-def play_song(obj):
-  stream = obj.getbestaudio(preftype="m4a")
-  stream.download(filepath=location+"."+stream.extension)
-  play_audio(stream.extension)
-
-def play_audio(ext):
-  print(ext)
-  if ext == "m4a":
-    play_m4a()
-
-def play_m4a():
-  pipes = dict(stdin=PIPE, stdout=PIPE, stderr=PIPE)
-  mplayer = Popen(["mplayer", location+".m4a"], **pipes)
-
-  # to control u can use Popen.communicate
-  mplayer.communicate(input=b">")
-  
-  sys.stdout.flush()
-
-def play_ogg():
-  pygame.init()
-  pygame.mixer.music.load(location+".ogg")
-  pygame.mixer.music.play()
-
-def get_song(command):
-  return pafy.new(command.value)
-
+    if command is not None:
+      if command.command_type == CommandTypes.MUSIC:
+        # Music procssor here
+        audioProcessor = AudioProcessor()
+        audioProcessor.process(command)
+      elif command.command_type == CommandTypes.SYSTEM:
+        #System processor here
+        systemProcessor = SystemProcessor()
+        systemProcessor.process(command)
 
 if __name__ == "__main__":
   main()

@@ -1,6 +1,7 @@
 
 import pafy, sys
 from subprocess import Popen, PIPE
+import configurations
 
 SupportedExtensions = ["m4a"]
 
@@ -12,12 +13,12 @@ class AudioPlayer:
   def __init__(self, command):
     self.command = command
 
-  def play():
+  def play(self):
     self._play_song(self._get_song())
 
   def _play_song(self, obj):
     stream = obj.getbestaudio(preftype="m4a")
-    stream.download(filepath=location+"."+stream.extension)
+    stream.download(filepath=configurations.BUFFERED_TEMP_LOCATION+"."+stream.extension)
     self._play_audio(stream.extension)
 
   def _play_audio(self, ext):
@@ -29,7 +30,7 @@ class AudioPlayer:
 
   def _play_m4a(self):
     pipes = dict(stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    mplayer = Popen(["mplayer", location+".m4a"], **pipes)
+    mplayer = Popen(["mplayer", configurations.BUFFERED_TEMP_LOCATION+".m4a"], **pipes)
 
     # to control u can use Popen.communicate
     mplayer.communicate(input=b">")

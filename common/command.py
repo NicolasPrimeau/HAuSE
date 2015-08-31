@@ -23,22 +23,23 @@ class Command:
   # This would fetch from mongo db
   def _fetchCommand(self):
     client = MongoClient()
-    cursor =
-        client[configurations.DB.NAME]
-              ['configurations.DB.COLLECTIONS.COMMANDS']
+    cursor = client[configurations.DB.NAME][configurations.DB.COLLECTIONS.COMMANDS]
 
     req = dict()
-    req['name'] = self.name
-    if cursor.count(req) == 0:
+    req["name"] = self.name
+    commands = list(cursor.find(req))
+
+    if len(commands) == 0:
       # we have to take action here, command doesn't exist
       # Would have to a systems command path, having to dynamically create new
       # commands.
       pass
-    elif cursor.count(req) > 1:
+    elif len(commands) > 1:
       # Just as evil, more than one command with certain name
       pass
     else:
-      result = cursor.find(req)[0]
+      result = commands[0]
+      self.name = result['name']
       self.command_type = result["command_type"]
       self.sub_type = result["sub_type"]
       self.value = result["value"]
