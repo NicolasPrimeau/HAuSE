@@ -1,4 +1,3 @@
-
 from pymongo import MongoClient
 import configurations
 # A command is an abstraction to the command present in the database
@@ -9,15 +8,14 @@ class Command:
   name = None
   command_type = None
   sub_type = None
-  value = None
   is_new = None
 
-  def __init__(self, name, command_type=None, sub_type=None, value=None):
+  def __init__(self, name, command_type=None, sub_type=None):
     self.name = name
     self.command_type = command_type
     self.sub_type = sub_type
-    self.value = value
-    self._fetchCommand()
+    if command_type is None or sub_type is None: 
+      self._fetchCommand()
 
   # Implement this later, most likely as inherited
   # This would fetch from mongo db
@@ -25,9 +23,7 @@ class Command:
     client = MongoClient()
     cursor = client[configurations.DB.NAME][configurations.DB.COLLECTIONS.COMMANDS]
 
-    req = dict()
-    req["name"] = self.name
-    commands = list(cursor.find(req))
+    commands = list(cursor.find({"name" : self.name}))
 
     if len(commands) == 0:
       # we have to take action here, command doesn't exist
@@ -42,19 +38,30 @@ class Command:
       self.name = result['name']
       self.command_type = result["command_type"]
       self.sub_type = result["sub_type"]
-      self.value = result["value"]
-      is_new = False
+      self.is_new = False
 
     client.close()
   
-  # Update the command in the DB
-  def update(self):
-    pass
-
   # create the new command in the db
   def create(self, overwrite=False):
-    pass
+    client = MongoClient()
+    cursor = client[configurations.DB.NAME][configurations.DB.COLLECTIONS.COMMANDS]
+    commands = list(cursor.find({"name" : self.name}))
 
+    if len(commands) == 0:
+        req = dict()
+        req["name"] = self.name
+        req["command_type"] = self.command_type
+        req["sub_type"] = self.sub_type
+       
+        cursor.insert(req)
+        self.is_new = True
+    else:
+      sys.stderr.write("Could not create " + self.name + ", it already exists!")
+    client.close()
 
   def delete(self):
-    pass
+    client = MongoClient()
+    cursor = client[configurations.DB.NAME][configurations.DB.COLLECTIONS.COMMANDS]
+    cursor.remove({"name" : self.name})
+    client.close()

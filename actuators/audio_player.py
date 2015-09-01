@@ -8,13 +8,16 @@ SupportedExtensions = ["m4a"]
 
 class AudioPlayer:
 
-  command = None
+  song = None
 
-  def __init__(self, command):
-    self.command = command
+  def __init__(self, song):
+    self.song = song
 
-  def play(self):
-    self._play_song(self._get_song())
+  def play(self, song=None):
+    if song is None:
+      self._play_song(self._get_song())
+    else:
+      self._play_song(self._get_song(song))
 
   def _play_song(self, obj):
     stream = obj.getbestaudio(preftype="m4a")
@@ -37,7 +40,10 @@ class AudioPlayer:
                         
     sys.stdout.flush()
 
-  def _get_song(self):
-    return pafy.new(self.command.value)
+  def _get_song(self, song=None):
+    if song is None:
+      return pafy.new(self.song.url)
+    else:
+      return pafy.new(song.url)
 
 

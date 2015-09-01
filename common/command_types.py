@@ -1,5 +1,5 @@
-
 class CommandTypes:
-  MUSIC = 1
-  SYSTEM = 2
-
+  SYSTEM = 1
+  AUDIO = 2
+  SOCIAL = 3
+  
