@@ -7,6 +7,7 @@ class DB():
   class COLLECTIONS():
     COMMANDS = "COMMANDS"
     MUSIC = "MUSIC"
+    NOTES = "NOTES"
   
 COMMAND_CACHE_SIZE = 10
 

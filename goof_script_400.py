@@ -22,15 +22,15 @@ def main():
 
     if command is not None and command.name is not None:
       print("Command " + command.name)
-      if command.command_type == CommandTypes.PLAY:
+      if command.command_type == CommandTypes.AUDIO:
         # Music procssor here
         audioProcessor = AudioProcessor()
         audioProcessor.process(command)
       elif command.command_type == CommandTypes.SYSTEM:
         #System processor here
-        systemProcessor = SystemProcessor(args["quiet"])
+        systemProcessor = SystemProcessor()
         systemProcessor.process(command)
-      elif command.command_type == CommandTypes.POST:
+      elif command.command_type == CommandTypes.SOCIAL:
         mediaProcessor = SocialMediaProcessor()
         mediaProcessor.process(command)
       elif command.name.lower() == "exit":
