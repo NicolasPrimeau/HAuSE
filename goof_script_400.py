@@ -7,6 +7,7 @@ from common.command_types import CommandTypes
 from common.command import Command
 from SubtypeProcessors.system_processor import SystemProcessor, SystemCommands
 from SubtypeProcessors.audio_processor import AudioProcessor
+from SubtypeProcessors.socialmedia_processor import SocialMediaProcessor
 
 
 def main():
@@ -29,6 +30,9 @@ def main():
         #System processor here
         systemProcessor = SystemProcessor(args["quiet"])
         systemProcessor.process(command)
+      elif command.command_type == CommandTypes.POST:
+        mediaProcessor = SocialMediaProcessor()
+        mediaProcessor.process(command)
       elif command.name.lower() == "exit":
         print("Exiting")
         sys.exit(0)
