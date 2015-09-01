@@ -73,6 +73,6 @@ class AudioProcessor(SubTypeProcessor):
 
   def _remove_song(self):
     name = super(AudioProcessor, self).get_input("Song title")
-    sonag = Song(name)
+    song = Song(name)
     song.delete()
     print(name + " deleted")
