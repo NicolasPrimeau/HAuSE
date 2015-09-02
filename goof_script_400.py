@@ -13,6 +13,8 @@ from SubtypeProcessors.socialmedia_processor import SocialMediaProcessor
 def main():
   configurations.parseArgs(sys.argv)
   listener = Listener()
+  if configurations.ARGS["quiet"]:
+    print("Running in quiet mode")
   while True:
     print("What's up?")
     if not configurations.ARGS["quiet"]:

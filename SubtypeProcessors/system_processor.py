@@ -5,6 +5,7 @@ from common.command_types import CommandTypes
 from SubtypeProcessors.subtype_processor import SubTypeProcessor
 from pymongo import MongoClient
 import configurations
+from speech.listener import Listener
 
 class SystemCommands:
   TIME = 1
@@ -31,8 +32,9 @@ class SystemProcessor(SubTypeProcessor):
           str(cur_time.tm_mday))
 
   def _take_note(self):
-    title = super(SystemProcessor, self).get_input("What's the title of this note")
-    note = super(SystemProcessor, self).get_input("What's your note")
+    listener = Listener()
+    title = listener.get_input("What's the title of this note")
+    note = listener.get_input("What's your note")
     client = MongoClient()
     cursor = client[configurations.DB.NAME][configurations.DB.COLLECTIONS.NOTES]
     note = dict()
@@ -45,7 +47,8 @@ class SystemProcessor(SubTypeProcessor):
     client.close()
 
   def _play_note(self):
-    title = super(SystemProcessor, self).get_input("What the title")
+    listener = Listener()
+    title = listener.get_input("What the title")
     client = MongoClient()
     cursor = client[configurations.DB.NAME][configurations.DB.COLLECTIONS.NOTES]
     notes = list(cursor.find({"title" : title}))

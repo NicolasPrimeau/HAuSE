@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from SubtypeProcessors.subtype_processor import SubTypeProcessor
 import configurations
-
+from speech.listener import Listener
 
 class Song:
   url = None
@@ -39,13 +39,14 @@ class Song:
   def _get_information(self):
     client = MongoClient()
     cursor = client[configurations.DB.NAME][configurations.DB.COLLECTIONS.MUSIC]
-    poss = list(cursor.find({"title" : title}))
+    poss = list(cursor.find({"title" : self.title}))
     if len(poss) == 0:
       print("Song not found, need to fetch it, implement eventually")
     elif len(poss) == 1:
-      self.url = poss['url']
-      self.artist = poss['artist'] 
+      self.url = poss[0]['url']
+      self.artist = poss[0]['artist'] 
     elif len(poss) == 2:
-      print("Multiple songs with same title, need to ask for artist, implement later")
+      listener = Listener()
+      self.artist = listener.get_input("What artist?")
     client.close()
    

@@ -25,7 +25,6 @@ class AudioProcessor(SubTypeProcessor):
         print("Song not found")
         return    
       player = AudioPlayer(song)
-      print("Playing song " + song.title)
       player.play()
     elif command.sub_type == AudioCommands.ADD:
       self._add_song()
@@ -34,8 +33,9 @@ class AudioProcessor(SubTypeProcessor):
 
 
   def _fetch_song(self):
-    song_name = super(AudioProcessor, self).get_input("What song")
-    artist = super(AudioProcessor, self).get_input("Artist")
+    listener = Listener()
+    song_name = listener.get_input("What song")
+    artist = listener.get_input("Artist")
     client = MongoClient()
     cursor = client[configurations.DB.NAME][configurations.DB.COLLECTIONS.MUSIC]
     songs = list(cursor.find({"title" : song_name}))
@@ -53,10 +53,11 @@ class AudioProcessor(SubTypeProcessor):
 
   
   def _add_song(self, name=None, artist=None):
+    listener = Listener()
     if name is None:
-      name = super(AudioProcessor, self).get_input("Song title")
+      name = listener.get_input("Song title")
     if artist is None:
-      artist = super(AudioProcesor, self).get_inptu("Artist")
+      artist = listener.get_input("Artist")
 
     query_string = urllib.parse.urlencode({"search_query" : artist + " " +name})
     html_content = urllib.request.urlopen("http://www.youtube.com/results?" +
@@ -68,11 +69,12 @@ class AudioProcessor(SubTypeProcessor):
 
     song = Song(name, top_result, artist=artist)
     song.create()
-    print(name +" added")
+    print(song.title + " by " + song.artist + " added")
     return song
 
   def _remove_song(self):
-    name = super(AudioProcessor, self).get_input("Song title")
+    listener = Listener()
+    name = listener.get_input("Song title")
     song = Song(name)
     song.delete()
     print(name + " deleted")

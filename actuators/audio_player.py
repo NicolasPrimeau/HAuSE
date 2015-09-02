@@ -1,7 +1,8 @@
 
 import pafy, sys
-from subprocess import Popen, PIPE
+from subprocess import Popen, TimeoutExpired, PIPE
 import configurations
+from speech.listener import Listener
 
 SupportedExtensions = ["m4a"]
 
@@ -15,12 +16,14 @@ class AudioPlayer:
 
   def play(self, song=None):
     if song is None:
+      print("Playing " + self.song.title + " by " + self.song.artist)
       self._play_song(self._get_song())
     else:
+      print("Playing " + song.title + " by " + self.song.artist)
       self._play_song(self._get_song(song))
 
   def _play_song(self, obj):
-    stream = obj.getbestaudio(preftype="m4a")
+    stream = obj.getbestaudio()
     stream.download(filepath=configurations.BUFFERED_TEMP_LOCATION+"."+stream.extension)
     self._play_audio(stream.extension)
 
@@ -32,12 +35,32 @@ class AudioPlayer:
       self._play_m4a()
 
   def _play_m4a(self):
-    pipes = dict(stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    mplayer = Popen(["mplayer", configurations.BUFFERED_TEMP_LOCATION+".m4a"], **pipes)
+    mplayer = Popen(["mplayer", configurations.BUFFERED_TEMP_LOCATION+".m4a"], stdin=PIPE, stderr=PIPE, stdout=PIPE)
 
-    # to control u can use Popen.communicate
-    mplayer.communicate(input=b">")
-                        
+    listener = Listener()
+    paused = False
+    stdin = mplayer.stdin
+    while True:
+      try:
+        mplayer.wait(timeout=0.1)
+        break
+      except TimeoutExpired:  
+        if not paused:
+          command = listener.get_input("Pause/Stop")
+        else:
+          command = listener.get_input("Play/Stop")
+
+        command = command.lower()
+        if command is not None:
+          if command == "pause" and not paused or command == "play" and paused:
+            stdin.write(b" ")
+            stdin.flush()
+            paused = not paused
+          elif command == "stop":
+            mplayer.terminate()
+            break
+          
+                    
     sys.stdout.flush()
 
   def _get_song(self, song=None):
