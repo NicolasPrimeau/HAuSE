@@ -1,5 +1,5 @@
 
-import pafy, sys
+import pafy, sys, signal
 import speech_recognition as sr
 from common.command import Command
 import configurations
@@ -8,6 +8,9 @@ class Listener:
 
   recognizer = None
   mic = None
+
+  class CommandTimeout(Exception):
+    pass
 
   def __init__(self):
     self.recognizer = sr.Recognizer()
@@ -23,20 +26,26 @@ class Listener:
         return None
 
   
-  def get_input(self, prompt, confirm=True):
+  def get_input(self, prompt, confirm=True, timeout=configurations.COMMAND_TIMEOUT):
     listener = Listener()
+    signal.signal(signal.SIGALRM, self.raise_timeout)
     while True:
       print(prompt+"?")
       if not configurations.ARGS['quiet']:
-        received = listener.listen() 
-        print(received)
+        try:
+          signal.alarm(timeout)
+          received = listener.listen() 
+          print(received)
+        except CommandTimeout:
+          received = None
+        signal.alarm(0)
         if received is None:
           print("I didn't catch that, say again?") 
           continue
       else:
         received = input()
  
-      if received.lower is "***k off":
+      if received.lower is "f*** off":
         print("I'm sorry :(")
         continue
 
@@ -45,7 +54,12 @@ class Listener:
 
       print("Is that correct? ")
       if not configurations.ARGS['quiet']:
-        response = listener.listen()
+        try:
+          signal.alarm(timeout)
+          response = listener.listen()
+        except CommandTimeout:
+          response = ""
+        signal.alarm(0)
         if response == "yes" or response == "yeah":
           break
       else:
@@ -53,3 +67,7 @@ class Listener:
         if response == "yes" or response == "y":
           break
     return received
+
+  def raise_timeout(self, *args):
+    raise Listener.CommandTimeout()
+

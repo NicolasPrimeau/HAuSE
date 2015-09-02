@@ -33,8 +33,8 @@ class SystemProcessor(SubTypeProcessor):
 
   def _take_note(self):
     listener = Listener()
-    title = listener.get_input("What's the title of this note")
-    note = listener.get_input("What's your note")
+    title = listener.get_input("What's the title of this note", timeout=20)
+    note = listener.get_input("What's your note", timeout=120)
     client = MongoClient()
     cursor = client[configurations.DB.NAME][configurations.DB.COLLECTIONS.NOTES]
     note = dict()
@@ -48,7 +48,7 @@ class SystemProcessor(SubTypeProcessor):
 
   def _play_note(self):
     listener = Listener()
-    title = listener.get_input("What the title")
+    title = listener.get_input("What the title", timeout=20)
     client = MongoClient()
     cursor = client[configurations.DB.NAME][configurations.DB.COLLECTIONS.NOTES]
     notes = list(cursor.find({"title" : title}))

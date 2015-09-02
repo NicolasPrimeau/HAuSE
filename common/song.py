@@ -43,7 +43,7 @@ class Song:
     if len(poss) == 0:
       print("Song not found, need to fetch it, implement eventually")
     elif len(poss) == 1:
-      self.url = poss[0]['url'].lower()
+      self.url = poss[0]['url']
       self.artist = poss[0]['artist'].lower()
     elif len(poss) == 2:
       listener = Listener()

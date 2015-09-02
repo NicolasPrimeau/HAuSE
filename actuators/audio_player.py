@@ -1,4 +1,5 @@
 
+
 import pafy, sys
 from subprocess import Popen, TimeoutExpired, PIPE
 import configurations
@@ -34,24 +35,19 @@ class AudioPlayer:
     self._play(ext)
 
   def _play(self, ext):
-    mplayer = Popen(["mplayer", "-slave", configurations.BUFFERED_TEMP_LOCATION+"."+ext], stdin=PIPE, stderr=PIPE, stdout=PIPE)
 
+    mplayer = Popen(["mplayer", "-slave", "-really-quiet", configurations.BUFFERED_TEMP_LOCATION+"."+ext], stdin=PIPE)
     listener = Listener()
     paused = False
     stdin = mplayer.stdin
-    while True:
-      try:
-        mplayer.wait(timeout=0.5)
-        break
-      except TimeoutExpired:  
+    while mplayer.poll() is None:
         if not paused:
-          command = listener.get_input("Pause/Stop", False)
+          command = listener.get_input("Break/Stop", False, timeout=configurations.COMMAND_TIMEOUT)
         else:
-          command = listener.get_input("Play/Stop", False)
-
+          command = listener.get_input("Play/Stop", False, timeout=configurations.COMMAND_TIMEOUT)
         command = command.lower()
         if command is not None:
-          if command == "pause" and not paused: 
+          if command == "break" and not paused: 
             stdin.write(b"p\n")
             stdin.flush()
             paused = True
@@ -62,14 +58,17 @@ class AudioPlayer:
           elif command == "stop":
             mplayer.terminate()
             break
-          
-                    
-    sys.stdout.flush()
+          elif command == "volume up":
+            stdin.write(b"/\n")
+            stdin.flush()
+          elif command == "volume down":
+            stdin.write(b"*\n")
+            stdin.flush()
+
 
   def _get_song(self, song=None):
     if song is None:
       return pafy.new(self.song.url)
     else:
       return pafy.new(song.url)
-
 
