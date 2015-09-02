@@ -4,7 +4,7 @@ from subprocess import Popen, TimeoutExpired, PIPE
 import configurations
 from speech.listener import Listener
 
-SupportedExtensions = ["m4a"]
+SupportedExtensions = ["m4a", "ogg"]
 
 
 class AudioPlayer:
@@ -29,33 +29,36 @@ class AudioPlayer:
 
   def _play_audio(self, ext):
     if ext not in SupportedExtensions:
-      sys.err.write("Extension " + ext + " not in supported extensions\n")
+      sys.stderr.write("Extension " + ext + " not in supported extensions\n")
 
-    if ext == "m4a":
-      self._play_m4a()
+    self._play(ext)
 
-  def _play_m4a(self):
-    mplayer = Popen(["mplayer", configurations.BUFFERED_TEMP_LOCATION+".m4a"], stdin=PIPE, stderr=PIPE, stdout=PIPE)
+  def _play(self, ext):
+    mplayer = Popen(["mplayer", "-slave", configurations.BUFFERED_TEMP_LOCATION+"."+ext], stdin=PIPE, stderr=PIPE, stdout=PIPE)
 
     listener = Listener()
     paused = False
     stdin = mplayer.stdin
     while True:
       try:
-        mplayer.wait(timeout=0.1)
+        mplayer.wait(timeout=0.5)
         break
       except TimeoutExpired:  
         if not paused:
-          command = listener.get_input("Pause/Stop")
+          command = listener.get_input("Pause/Stop", False)
         else:
-          command = listener.get_input("Play/Stop")
+          command = listener.get_input("Play/Stop", False)
 
         command = command.lower()
         if command is not None:
-          if command == "pause" and not paused or command == "play" and paused:
-            stdin.write(b" ")
+          if command == "pause" and not paused: 
+            stdin.write(b"p\n")
             stdin.flush()
-            paused = not paused
+            paused = True
+          elif command == "play" and paused:
+            stdin.write(b"p\n")
+            stdin.flush()
+            paused = False
           elif command == "stop":
             mplayer.terminate()
             break

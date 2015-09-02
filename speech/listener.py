@@ -23,7 +23,7 @@ class Listener:
         return None
 
   
-  def get_input(self, prompt):
+  def get_input(self, prompt, confirm=True):
     listener = Listener()
     while True:
       print(prompt+"?")
@@ -35,6 +35,14 @@ class Listener:
           continue
       else:
         received = input()
+ 
+      if received.lower is "***k off":
+        print("I'm sorry :(")
+        continue
+
+      if not confirm:
+        return received
+
       print("Is that correct? ")
       if not configurations.ARGS['quiet']:
         response = listener.listen()

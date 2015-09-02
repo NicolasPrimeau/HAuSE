@@ -8,11 +8,11 @@ class Song:
   title = None
   artist = None
 
-  def __init__(self, title, url=None, artist=None):
-    self.title = title
+  def __init__(self, title, url=None, artist=""):
+    self.title = title.lower()
     self.url = url
-    self.artist = artist
-    if url is None or artist is None:
+    self.artist = artist.lower()
+    if url is None or artist == "":
       self._get_information()
 
   def create(self):
@@ -43,10 +43,10 @@ class Song:
     if len(poss) == 0:
       print("Song not found, need to fetch it, implement eventually")
     elif len(poss) == 1:
-      self.url = poss[0]['url']
-      self.artist = poss[0]['artist'] 
+      self.url = poss[0]['url'].lower()
+      self.artist = poss[0]['artist'].lower()
     elif len(poss) == 2:
       listener = Listener()
-      self.artist = listener.get_input("What artist?")
+      self.artist = listener.get_input("What artist?").lower()
     client.close()
    
