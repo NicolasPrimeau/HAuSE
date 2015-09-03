@@ -2,6 +2,7 @@
 from actuators import twitter_poster
 from SubtypeProcessors.subtype_processor import SubTypeProcessor
 from speech.listener import Listener
+import configurations
 
 class SocialMediaTypes:
   TWITTER = "twitter"

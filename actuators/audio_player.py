@@ -45,8 +45,8 @@ class AudioPlayer:
           command = listener.get_input("Break/Stop", False, timeout=configurations.COMMAND_TIMEOUT)
         else:
           command = listener.get_input("Play/Stop", False, timeout=configurations.COMMAND_TIMEOUT)
-        command = command.lower()
         if command is not None:
+          command = command.lower()
           if command == "break" and not paused: 
             stdin.write(b"p\n")
             stdin.flush()

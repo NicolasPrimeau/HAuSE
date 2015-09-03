@@ -1,0 +1,4 @@
+
+
+class CancelCommand(Exception):
+  pass

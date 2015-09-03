@@ -8,6 +8,8 @@ class DB():
     COMMANDS = "COMMANDS"
     MUSIC = "MUSIC"
     NOTES = "NOTES"
+
+CANCEL = "cancel"
   
 COMMAND_CACHE_SIZE = 10
 
