@@ -1,1 +1,1 @@
-alert("Yolo")
+<script>alert("Yolo")</script>
